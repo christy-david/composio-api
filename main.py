@@ -7,10 +7,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from composio import Composio
 from openai import OpenAI
 
-from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
-import time
-
 import webbrowser
 
 app = FastAPI()
@@ -35,11 +31,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.get("/")
 async def root():
-    return {
-        'status':200,'message':'Server running.'
-    }
+    return {"status": 200, "message": "Server running."}
 
 
 @app.post("/integrations/")
@@ -49,23 +44,6 @@ async def integrations(params: IntegrationParams):
     response = requests.request("GET", url, headers=headers)
     return response.json()
 
-
-def open_redirect_url(redirect_url):
-    # Initialize the Chrome WebDriver
-    driver = webdriver.Firefox()
-
-    try:
-        # Open the redirect URL
-        driver.get(redirect_url)
-
-        # Wait for some time to ensure the page is loaded
-        time.sleep(5)
-
-        # You can add more automation steps here if needed, like filling forms, clicking buttons, etc.
-
-    finally:
-        # Close the browser window
-        driver.quit()
 
 
 @app.post("/execute/")
@@ -80,8 +58,6 @@ async def execute(params: ExecutionParams):
         connected_account = integration.initiate_connection(entity_id=None)
 
         print("Complete the auth flow, link: ", connected_account.redirectUrl)
-
-        # open_redirect_url(connected_account.redirectUrl)
 
         webbrowser.open(connected_account.redirectUrl)
 
