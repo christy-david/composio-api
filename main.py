@@ -1,7 +1,5 @@
 from fastapi import FastAPI
 import requests
-
-# import httpx
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from composio import Composio
@@ -39,11 +37,13 @@ async def root():
 
 @app.post("/integrations/")
 async def integrations(params: IntegrationParams):
-    url = "https://backend.composio.dev/api/v1/integrations"
-    headers = {"X-API-Key": params.composioApiKey}
-    response = requests.request("GET", url, headers=headers)
-    return response.json()
-
+    try:
+        url = "https://backend.composio.dev/api/v1/integrations"
+        headers = {"X-API-Key": params.composioApiKey}
+        response = requests.request("GET", url, headers=headers)
+        return response.json()
+    except Exception as e:
+        return {"status": 404, "message": str(e)}
 
 
 @app.post("/execute/")
@@ -74,7 +74,7 @@ async def execute(params: ExecutionParams):
 
         # Create a chat completion request to decide on the action
         response = openai_client.chat.completions.create(
-            model="gpt-3.5-turbo",
+            model="gpt-3.5-turbo-16k-0613",
             tools=actions,  # Passing actions we fetched earlier.
             messages=[
                 {"role": "system", "content": "You are a helpful assistant."},
