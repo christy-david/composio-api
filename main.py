@@ -17,7 +17,7 @@ class IntegrationParams(BaseModel):
 class ExecutionParams(BaseModel):
     composio: str
     integration: str
-    openai: str
+    llm: str
     prompt: str
 
 
@@ -70,7 +70,7 @@ async def execute(params: ExecutionParams):
         task = params.prompt
 
         # Initialize the OpenAI client with your API key
-        openai_client = OpenAI(api_key=params.openai)
+        openai_client = OpenAI(api_key=params.llm)
 
         # Create a chat completion request to decide on the action
         response = openai_client.chat.completions.create(
